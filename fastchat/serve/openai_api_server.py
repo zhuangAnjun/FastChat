@@ -447,9 +447,9 @@ async def chat_completion_stream_generator(
             chunk = ChatCompletionStreamResponse(
                 id=id, choices=[choice_data], model=model_name
             )
+            if content.get("finish_reason", None) is not None:
+                finish_stream_events.append(chunk)
             if delta_text is None:
-                if content.get("finish_reason", None) is not None:
-                    finish_stream_events.append(chunk)
                 continue
             yield f"data: {chunk.json(exclude_unset=True, ensure_ascii=False)}\n\n"
     # There is not "content" field in the last delta message, so exclude_none to exclude field "content".
@@ -568,9 +568,9 @@ async def generate_completion_stream_generator(
                     choices=[choice_data],
                     model=model_name,
                 )
+                if content.get("finish_reason", None) is not None:
+                    finish_stream_events.append(chunk)
                 if len(delta_text) == 0:
-                    if content.get("finish_reason", None) is not None:
-                        finish_stream_events.append(chunk)
                     continue
                 yield f"data: {chunk.json(exclude_unset=True, ensure_ascii=False)}\n\n"
     # There is not "content" field in the last delta message, so exclude_none to exclude field "content".
